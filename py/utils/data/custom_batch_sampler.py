@@ -56,16 +56,21 @@ class CustomBatchSampler(Sampler):
 
 
 def jiao():
-    root_dir = '../../data/classifier_car/train'
+    root_dir = '../../data/classifier_car/val'
+    #root_dir = '../../data/classifier_car/train'
+
     train_data_set = CustomFinetuneDataset(root_dir)
     train_sampler = CustomBatchSampler(train_data_set.get_positive_num(), train_data_set.get_negative_num(), 32, 96)
 
     print('sampler len: %d' % train_sampler.__len__())
     print('sampler batch num: %d' % train_sampler.get_num_batch())
 
-    first_idx_list = list(train_sampler.__iter__())[:128]
+    first_idx_list = list(train_sampler.__iter__())[:128]#前128个样本在数据集中的索引弄成列表，可以看出这是随机取样的
     print(first_idx_list)
     # 单次批量中正样本个数
+    #接下来，代码中使用np.sum(np.array(first_idx_list) < 66517)
+    #来统计first_idx_list中正样本的数量。这里的66517应该是数据集中第一个负样本的索引
+    #（在代码中没有给出），因为数据集中负样本的索引是大于等于66517的。
     print('positive batch: %d' % np.sum(np.array(first_idx_list) < 66517))
 
 
