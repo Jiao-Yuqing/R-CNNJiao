@@ -53,8 +53,8 @@ def load_data(data_root_dir):
 def train_model(data_loaders, model, criterion, optimizer, lr_scheduler, num_epochs=25, device=None):
     since = time.time()
 
-    best_model_weights = copy.deepcopy(model.state_dict())
-    best_acc = 0.0
+    best_model_weights = copy.deepcopy(model.state_dict())#将初始模型的权重复制到best_model_weights变量中，以备后面更新最优模型时使用
+    best_acc = 0.0#定义最优准确率初始值为0。
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -67,7 +67,7 @@ def train_model(data_loaders, model, criterion, optimizer, lr_scheduler, num_epo
             else:
                 model.eval()  # Set model to evaluate mode
 
-            running_loss = 0.0
+            running_loss = 0.0#分别定义当前阶段的损失和准确率
             running_corrects = 0
 
             # Iterate over data.
@@ -76,7 +76,7 @@ def train_model(data_loaders, model, criterion, optimizer, lr_scheduler, num_epo
                 labels = labels.to(device)
 
                 # zero the parameter gradients
-                optimizer.zero_grad()
+                optimizer.zero_grad()#每个batch开始前清除梯度。
 
                 # forward
                 # track history if only in train
@@ -91,19 +91,19 @@ def train_model(data_loaders, model, criterion, optimizer, lr_scheduler, num_epo
                         optimizer.step()
 
                 # statistics
-                running_loss += loss.item() * inputs.size(0)
-                running_corrects += torch.sum(preds == labels.data)
+                running_loss += loss.item() * inputs.size(0)#计算当前batch的损失和准确率。
+                running_corrects += torch.sum(preds == labels.data)#准确个数的累加
             if phase == 'train':
-                lr_scheduler.step()
+                lr_scheduler.step()#如果处于训练模式，就调整学习率。
 
-            epoch_loss = running_loss / data_sizes[phase]
-            epoch_acc = running_corrects.double() / data_sizes[phase]
+            epoch_loss = running_loss / data_sizes[phase]#平均损失
+            epoch_acc = running_corrects.double() / data_sizes[phase]#准确个数除以总个数得到预测准确率
 
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(
                 phase, epoch_loss, epoch_acc))
 
             # deep copy the model
-            if phase == 'val' and epoch_acc > best_acc:
+            if phase == 'val' and epoch_acc > best_acc:#所有的数据集全都跑一遍才是一次epoch
                 best_acc = epoch_acc
                 best_model_weights = copy.deepcopy(model.state_dict())
 
