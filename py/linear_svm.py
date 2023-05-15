@@ -18,10 +18,10 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 from torchvision.models import alexnet
 
-from py.utils import CustomClassifierDataset
-from py.utils import CustomHardNegativeMiningDataset
-from py.utils import CustomBatchSampler
-from py.utils import save_model
+from py.utils.data.custom_classifier_dataset import CustomClassifierDataset
+from py.utils.data.custom_hard_negative_mining_dataset import CustomHardNegativeMiningDataset
+from py.utils.data.custom_batch_sampler import CustomBatchSampler
+from py.utils.util import save_model
 
 batch_positive = 32
 batch_negative = 96
@@ -46,16 +46,16 @@ def load_data(data_root_dir):
         data_set = CustomClassifierDataset(data_dir, transform=transform)
         if name is 'train':
             """
-            使用hard negative mining方式
+            使用hard negative mining方式，    这里没用到，没有从模型判断错误的负样本集合中取数据？后面用到了
             初始正负样本比例为1:1。由于正样本数远小于负样本，所以以正样本数为基准，在负样本集中随机提取同样数目负样本作为初始负样本集
             """
             positive_list = data_set.get_positives()
             negative_list = data_set.get_negatives()
-
-            init_negative_idxs = random.sample(range(len(negative_list)), len(positive_list))
-            init_negative_list = [negative_list[idx] for idx in range(len(negative_list)) if idx in init_negative_idxs]
-            remain_negative_list = [negative_list[idx] for idx in range(len(negative_list))
-                                    if idx not in init_negative_idxs]
+            #init_negative_idxs是索引列表   init_negative_list才是真正的负样本集合（根据索引取数据）
+            init_negative_idxs = random.sample(range(len(negative_list)), len(positive_list))#使用random.sample函数随机选择与正样本数量相同数量的负样本索引。这些索引将用于构建初始负样本集合。
+            init_negative_list = [negative_list[idx] for idx in range(len(negative_list)) if idx in init_negative_idxs]#使用random.sample函数随机选择与正样本数量相同数量的负样本索引。这些索引将用于构建初始负样本集合。
+            remain_negative_list = [negative_list[idx] for idx in range(len(negative_list))#根据选择的负样本索引，创建初始负样本集合init_negative_list。
+                                    if idx not in init_negative_idxs]#未被选择为初始负样本的负样本集合
 
             data_set.set_negative_list(init_negative_list)
             data_loaders['remain'] = remain_negative_list
@@ -249,21 +249,22 @@ if __name__ == '__main__':
 
     # 加载CNN模型
     model_path = './models/alexnet_car.pth'
-    model = alexnet()
+    model = alexnet()#加载alexnet模型，这次不需要预训练了，因为finetune中已经训练出了模型。
     num_classes = 2
     num_features = model.classifier[6].in_features
-    model.classifier[6] = nn.Linear(num_features, num_classes)
-    model.load_state_dict(torch.load(model_path))
-    model.eval()
+    model.classifier[6] = nn.Linear(num_features, num_classes)#把alexnet的最后一层改成二分类，因为finetune的模型最后一层就是二分类，不改的话，没法加载这个模型
+    model.load_state_dict(torch.load(model_path,map_location=torch.device('cpu')))#加载finetune训练好的模型
+   #model.load_state_dict(torch.load(model_path))#有gpu用这个
+    model.eval()#将模型切换到评估模式
     # 固定特征提取
     for param in model.parameters():
-        param.requires_grad = False
+        param.requires_grad = False  #所有参数设置为不需要梯度更新
     # 创建SVM分类器
-    model.classifier[6] = nn.Linear(num_features, num_classes)
+    model.classifier[6] = nn.Linear(num_features, num_classes)#最后一层需要更新，所以重新定义这一层
     # print(model)
     model = model.to(device)
 
-    criterion = hinge_loss
+    criterion = hinge_loss#hinge_loss是一种损失函数，也叫做合页损失函数（hinge loss），通常用于支持向量机（Support Vector Machine, SVM）等机器学习算法中的二分类问题。
     # 由于初始训练集数量很少，所以降低学习率
     optimizer = optim.SGD(model.parameters(), lr=1e-4, momentum=0.9)
     # 共训练10轮，每隔4论减少一次学习率

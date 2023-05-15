@@ -15,7 +15,7 @@ from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 
-from utils.util import parse_car_csv
+from py.utils.util import parse_car_csv
 
 
 class CustomClassifierDataset(Dataset):
@@ -31,7 +31,7 @@ class CustomClassifierDataset(Dataset):
             jpeg_images.append(cv2.imread(os.path.join(root_dir, 'JPEGImages', sample_name + ".jpg")))
 
             positive_annotation_path = os.path.join(root_dir, 'Annotations', sample_name + '_1.csv')
-            positive_annotations = np.loadtxt(positive_annotation_path, dtype=np.int, delimiter=' ')
+            positive_annotations = np.loadtxt(positive_annotation_path, dtype=int, delimiter=' ')
             # 考虑csv文件为空或者仅包含单个标注框
             if len(positive_annotations.shape) == 1:
                 # 单个标注框坐标
@@ -54,7 +54,7 @@ class CustomClassifierDataset(Dataset):
                     positive_list.append(positive_dict)
 
             negative_annotation_path = os.path.join(root_dir, 'Annotations', sample_name + '_0.csv')
-            negative_annotations = np.loadtxt(negative_annotation_path, dtype=np.int, delimiter=' ')
+            negative_annotations = np.loadtxt(negative_annotation_path, dtype=int, delimiter=' ')
             # 考虑csv文件为空或者仅包含单个标注框
             if len(negative_annotations.shape) == 1:
                 # 单个标注框坐标
@@ -139,7 +139,7 @@ class CustomClassifierDataset(Dataset):
         self.negative_list = negative_list
 
 
-def test(idx):
+def jiao(idx):
     root_dir = '../../data/classifier_car/val'
     train_data_set = CustomClassifierDataset(root_dir)
 
@@ -160,7 +160,7 @@ def test(idx):
     # cv2.waitKey(0)
 
 
-def test2():
+def jiao2():
     root_dir = '../../data/classifier_car/train'
     transform = transforms.Compose([
         transforms.ToPILImage(),
@@ -176,7 +176,7 @@ def test2():
     print('image.shape: ' + str(image.shape))
 
 
-def test3():
+def jiao3():
     root_dir = '../../data/classifier_car/train'
     transform = transforms.Compose([
         transforms.ToPILImage(),
@@ -196,6 +196,6 @@ def test3():
 if __name__ == '__main__':
     # test(159622)
     # test(4051)
-    test(24768)
+    jiao(24768)
     # test2()
     # test3()

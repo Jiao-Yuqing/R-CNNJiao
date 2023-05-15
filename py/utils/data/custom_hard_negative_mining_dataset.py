@@ -9,7 +9,7 @@
 
 import torch.nn as nn
 from torch.utils.data import Dataset
-from utils.data.custom_classifier_dataset import CustomClassifierDataset
+from py.utils.data.custom_classifier_dataset import CustomClassifierDataset
 
 
 class CustomHardNegativeMiningDataset(Dataset):
