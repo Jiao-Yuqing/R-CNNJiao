@@ -21,7 +21,7 @@ def check_dir(data_dir):
 
 def parse_car_csv(csv_dir):
     csv_path = os.path.join(csv_dir, 'car.csv')
-    samples = np.loadtxt(csv_path, dtype=np.str)
+    samples = np.loadtxt(csv_path, dtype=str)
     return samples
 
 

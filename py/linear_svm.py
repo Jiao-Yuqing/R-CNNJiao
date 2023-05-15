@@ -44,7 +44,7 @@ def load_data(data_root_dir):
         data_dir = os.path.join(data_root_dir, name)
 
         data_set = CustomClassifierDataset(data_dir, transform=transform)
-        if name is 'train':
+        if name == 'train':
             """
             使用hard negative mining方式，    这里没用到，没有从模型判断错误的负样本集合中取数据？后面用到了
             初始正负样本比例为1:1。由于正样本数远小于负样本，所以以正样本数为基准，在负样本集中随机提取同样数目负样本作为初始负样本集
@@ -253,8 +253,8 @@ if __name__ == '__main__':
     num_classes = 2
     num_features = model.classifier[6].in_features
     model.classifier[6] = nn.Linear(num_features, num_classes)#把alexnet的最后一层改成二分类，因为finetune的模型最后一层就是二分类，不改的话，没法加载这个模型
-    model.load_state_dict(torch.load(model_path,map_location=torch.device('cpu')))#加载finetune训练好的模型
-   #model.load_state_dict(torch.load(model_path))#有gpu用这个
+    #model.load_state_dict(torch.load(model_path,map_location=torch.device('cpu')))#加载finetune训练好的模型
+    model.load_state_dict(torch.load(model_path))#有gpu用这个
     model.eval()#将模型切换到评估模式
     # 固定特征提取
     for param in model.parameters():
