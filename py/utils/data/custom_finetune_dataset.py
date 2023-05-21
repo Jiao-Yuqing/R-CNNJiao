@@ -77,28 +77,30 @@ class CustomFinetuneDataset(Dataset):
         self.negative_sizes = negative_sizes
         self.positive_rects = positive_rects
         self.negative_rects = negative_rects
-        self.total_positive_num = int(np.sum(positive_sizes))
+        self.total_positive_num = int(np.sum(positive_sizes))#
         self.total_negative_num = int(np.sum(negative_sizes))
 
     # __getitem__是Python中的一个特殊方法，用于定义类对象的索引操作，即通过类对象的下标符号[]
     # 获取元素。在数据集类中，该方法通常用于实现数据的加载和预处理。
     # 训练集正向框体个数625正向框体汇总总数376
     # 训练集负向框体个数358281负向框体汇总总数376
+
     # 验证集正向框体个数625正向框体汇总总数337
     # 验证集负向框体个数315323 负向框体汇总总数337
-    def __getitem__(self, index: int):
+
+    def __getitem__(self, index: int):#index的传入范围是从0 到  total_positive_num加negative_num
         # 定位下标所属图像
-        image_id = len(self.jpeg_images) - 1
-        if index < self.total_positive_num:
+        image_id = len(self.jpeg_images) - 1#图像个数-1
+        if index < self.total_positive_num:#正样本方框的个数
             # 正样本
             target = 1
-            xmin, ymin, xmax, ymax = self.positive_rects[index]
+            xmin, ymin, xmax, ymax = self.positive_rects[index]#positive_rects的长度就是total_positive_num
             # 寻找所属图像
-            for i in range(len(self.positive_sizes) - 1):
+            for i in range(len(self.positive_sizes) - 1):#图像的个数，不是方框的个数
                 if np.sum(self.positive_sizes[:i]) <= index < np.sum(self.positive_sizes[:(i + 1)]):
-                    image_id = i
+                    image_id = i#找到图像的编号
                     break
-            image = self.jpeg_images[image_id][ymin:ymax, xmin:xmax]
+            image = self.jpeg_images[image_id][ymin:ymax, xmin:xmax]#从图像中找到这个方框，[image_id]是图像编号[ymin:ymax, xmin:xmax]是方框坐标
         else:
             # 负样本
             target = 0
@@ -149,7 +151,7 @@ def jiao1(idx):
 
 
 def jiao2():
-    root_dir = '../../data/classifier_car/train'
+    root_dir = '../../data/classifier_car/val'
     transform = transforms.Compose([
         transforms.ToPILImage(),
         transforms.Resize((227, 227)),
@@ -183,4 +185,4 @@ def jiao3():
 if __name__ == '__main__':
     # test(159622)
     # test(4051)
-    jiao1(24768)
+    jiao1(3)

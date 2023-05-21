@@ -49,7 +49,7 @@ def parse_annotation_jpeg(annotation_path, jpeg_path, gs):
         xmin, ymin, xmax, ymax = bndbox
         bndbox_size = (ymax - ymin) * (xmax - xmin)
         if bndbox_size > maximum_bndbox_size:
-            maximum_bndbox_size = bndbox_size
+            maximum_bndbox_size = bndbox_size#获取最大的标注框大小
 
     # 获取候选建议和标注边界框的IoU
     iou_list = compute_ious(rects, bndboxs)
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     classifier_root_dir = '../../data/classifier_car/'
     check_dir(classifier_root_dir)#检查目录是否存在，不存在就创建目录
 
-    gs = selectivesearch.get_selective_search()
+    gs = selectivesearch.get_selective_search()#获取可以实现选择性搜索的对象
     for name in ['train', 'val']:
         src_root_dir = os.path.join(car_root_dir, name)
         src_annotation_dir = os.path.join(src_root_dir, 'Annotations')
@@ -91,7 +91,7 @@ if __name__ == '__main__':
         total_num_positive = 0
         total_num_negative = 0
 
-        samples = parse_car_csv(src_root_dir)
+        samples = parse_car_csv(src_root_dir)#读取src_root_dir目录(voc_car/train或者voc_car/val)中car_csv文件
         # 复制csv文件
         src_csv_path = os.path.join(src_root_dir, 'car.csv')
         dst_csv_path = os.path.join(dst_root_dir, 'car.csv')
@@ -99,8 +99,8 @@ if __name__ == '__main__':
         for sample_name in samples:
             since = time.time()
 
-            src_annotation_path = os.path.join(src_annotation_dir, sample_name + '.xml')
-            src_jpeg_path = os.path.join(src_jpeg_dir, sample_name + '.jpg')
+            src_annotation_path = os.path.join(src_annotation_dir, sample_name + '.xml')#根据car_csv文件找到了对应的xml文件
+            src_jpeg_path = os.path.join(src_jpeg_dir, sample_name + '.jpg')##根据car_csv文件找到了对应的jpg文件
             # 获取正负样本
             positive_list, negative_list = parse_annotation_jpeg(src_annotation_path, src_jpeg_path, gs)
             total_num_positive += len(positive_list)

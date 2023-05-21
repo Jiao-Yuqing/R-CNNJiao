@@ -57,7 +57,7 @@ def load_data(data_root_dir):
             remain_negative_list = [negative_list[idx] for idx in range(len(negative_list))#根据选择的负样本索引，创建初始负样本集合init_negative_list。
                                     if idx not in init_negative_idxs]#未被选择为初始负样本的负样本集合
 
-            data_set.set_negative_list(init_negative_list)
+            data_set.set_negative_list(init_negative_list)#负样本仅设置625个，和正样本数量保持一致
             data_loaders['remain'] = remain_negative_list
 
         sampler = CustomBatchSampler(data_set.get_positive_num(), data_set.get_negative_num(),
@@ -266,7 +266,7 @@ if __name__ == '__main__':
 
     criterion = hinge_loss#hinge_loss是一种损失函数，也叫做合页损失函数（hinge loss），通常用于支持向量机（Support Vector Machine, SVM）等机器学习算法中的二分类问题。
     # 由于初始训练集数量很少，所以降低学习率
-    optimizer = optim.SGD(model.parameters(), lr=1e-4, momentum=0.9)
+    optimizer = optim.SGD(model.parameters(), lr=1e-4, momentum=0.9)#随机梯度下降，也是SVM的优化方法
     # 共训练10轮，每隔4论减少一次学习率
     lr_schduler = optim.lr_scheduler.StepLR(optimizer, step_size=4, gamma=0.1)
 

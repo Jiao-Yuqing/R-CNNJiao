@@ -16,8 +16,9 @@ import torch.nn as nn
 from torchvision.models import alexnet
 import torchvision.transforms as transforms
 import selectivesearch
+from py.utils import util
 
-from py import utils as util
+# from py import utils as util
 
 
 def get_device():
@@ -42,7 +43,15 @@ def get_model(device=None):
     num_classes = 2
     num_features = model.classifier[6].in_features
     model.classifier[6] = nn.Linear(num_features, num_classes)
-    model.load_state_dict(torch.load('./models/best_linear_svm_alexnet_car.pth'))
+
+    if torch.cuda.is_available():
+    # If CUDA is available, use GPU
+        model.load_state_dict(torch.load('./models/best_linear_svm_alexnet_car.pth'))
+
+    else:
+        # Else, load on CPU
+        model.load_state_dict(torch.load('./models/best_linear_svm_alexnet_car.pth', map_location='cpu'))
+
     model.eval()
 
     # 取消梯度追踪
@@ -139,7 +148,7 @@ if __name__ == '__main__':
 
     # softmax = torch.softmax()
 
-    svm_thresh = 0.60
+    svm_thresh = 0.60#
 
     # 保存正样本边界框以及
     score_list = list()
@@ -153,7 +162,7 @@ if __name__ == '__main__':
         rect_img = img[ymin:ymax, xmin:xmax]
 
         rect_transform = transform(rect_img).to(device)
-        output = model(rect_transform.unsqueeze(0))[0]
+        output = model(rect_transform.unsqueeze(0))[0]#unsqueeze() 函数的作用是在指定的维度上增加一个维度形状为 [3, 4, 5] 的张量，执行 unsqueeze(0) 后，它的形状将变为 [1, 3, 4, 5]
 
         if torch.argmax(output).item() == 1:
             """
@@ -179,8 +188,8 @@ if __name__ == '__main__':
     # tmp_img = copy.deepcopy(dst)
     # draw_box_with_text(tmp_img, positive_list, score_list)
     # cv2.imshow('tmp2', tmp_img)
-
-    nms_rects, nms_scores = nms(positive_list, score_list)
+    print("统计正例的数量和分值的数量:", len(positive_list), len(score_list))
+    nms_rects, nms_scores = nms(positive_list, score_list)#非极大值抑制
     print(nms_rects)
     print(nms_scores)
     draw_box_with_text(dst, nms_rects, nms_scores)

@@ -32,21 +32,21 @@ class CustomBatchSampler(Sampler):
         self.batch_negative = batch_negative
 
         length = num_positive + num_negative
-        self.idx_list = list(range(length))
+        self.idx_list = list(range(length))#制作编号，从0到length（正负样本总数）
 
         self.batch = batch_negative + batch_positive
-        self.num_iter = length // self.batch
+        self.num_iter = length // self.batch#可以迭代的总伦数
 
     def __iter__(self):
         sampler_list = list()
         for i in range(self.num_iter):
             tmp = np.concatenate(
-                (random.sample(self.idx_list[:self.num_positive], self.batch_positive),
-                 random.sample(self.idx_list[self.num_positive:], self.batch_negative))
+                (random.sample(self.idx_list[:self.num_positive], self.batch_positive),#0：正个数，中取得正样本
+                 random.sample(self.idx_list[self.num_positive:], self.batch_negative))#正个数：正负总数（这就是负样本的范围）
             )
             random.shuffle(tmp)
             sampler_list.extend(tmp)
-        return iter(sampler_list)
+        return iter(sampler_list)#返回的是编号
 
     def __len__(self) -> int:
         return self.num_iter * self.batch

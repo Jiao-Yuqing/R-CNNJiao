@@ -55,7 +55,7 @@ def parse_xml(xml_path):
         return np.array(bndboxs)
 
 
-def iou(pred_box, target_box):
+def iou(pred_box, target_box):#返回的scores就是iou值,如果target_box是多个框体，ndarray:(多个,4)，那么返回值列表scores中也有多个值
     """
     计算候选建议和标注边界框的IoU
     :param pred_box: 大小为[4]
@@ -63,10 +63,10 @@ def iou(pred_box, target_box):
     :return: [N]
     """
     if len(target_box.shape) == 1:
-        target_box = target_box[np.newaxis, :]
-
-    xA = np.maximum(pred_box[0], target_box[:, 0])
-    yA = np.maximum(pred_box[1], target_box[:, 1])
+        target_box = target_box[np.newaxis, :]#转换后的 target_box 的形状将变为 (1, n)，其中 n 表示 target_box 中原始元素的数量。
+#XA和YA是交集中左下角的点，xB和yB是靠交集中右上角的点
+    xA = np.maximum(pred_box[0], target_box[:, 0])#靠右边的点的x坐标找出来
+    yA = np.maximum(pred_box[1], target_box[:, 1])#靠上边的点的y坐标找出来
     xB = np.minimum(pred_box[2], target_box[:, 2])
     yB = np.minimum(pred_box[3], target_box[:, 3])
     # 计算交集面积

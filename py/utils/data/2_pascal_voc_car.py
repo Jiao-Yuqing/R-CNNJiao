@@ -100,7 +100,7 @@ def sample_train_val(samples):
 
 def save_car(car_samples, data_root_dir, data_annotation_dir, data_jpeg_dir):
     """
-    保存类别Car的样本图片和标注文件
+    保存类别Car的样本图片jpeg和标注文件xml
     """
     for sample_name in car_samples:
         src_annotation_path = os.path.join(voc_annotation_dir, sample_name + suffix_xml)
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     samples = {'train': parse_train_val(car_train_path), 'val': parse_train_val(car_val_path)}
     print(samples)
     print('train\'s lengh',len(samples['train']))#376条数据，训练
-    print('val\'s lengh', len(samples['val']))#377条数据，验证
+    print('val\'s lengh', len(samples['val']))#337条数据，验证
 
     '''
     

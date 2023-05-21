@@ -7,7 +7,7 @@
 @description: 分类器数据集类，可进行正负样本集替换，适用于hard negative mining操作
 """
 
-import numpy  as np
+import numpy as np
 import os
 import cv2
 from PIL import Image
@@ -140,7 +140,7 @@ class CustomClassifierDataset(Dataset):
 
 
 def jiao(idx):
-    root_dir = '../../data/classifier_car/val'
+    root_dir = '../../data/classifier_car/train'
     train_data_set = CustomClassifierDataset(root_dir)
 
     print('positive num: %d' % train_data_set.get_positive_num())

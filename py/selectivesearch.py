@@ -11,7 +11,7 @@ import cv2
 
 
 def get_selective_search():
-    gs = cv2.ximgproc.segmentation.createSelectiveSearchSegmentation()
+    gs = cv2.ximgproc.segmentation.createSelectiveSearchSegmentation()#函数返回一个选择性搜索算法对象
     return gs
 
 
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     选择性搜索算法操作
     """
     img = cv2.imread('./data/lena.jpg', cv2.IMREAD_COLOR)
-    gs = get_selective_search()
+    gs = get_selective_search()#获取选择性搜索对象
     config(gs, img, strategy='q')
     rects = get_rects(gs)
     print(len(rects))#lena.jpg这幅图总共可以生成6203个矩形

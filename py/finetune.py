@@ -169,3 +169,5 @@ if __name__ == '__main__':
     # 保存最好的模型参数
     check_dir('./models')
     torch.save(best_model.state_dict(), 'models/alexnet_car.pth')
+
+
